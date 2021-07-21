@@ -63,5 +63,19 @@ namespace InstituicaoEnsinoSuperior.Controllers
             instituicao.InstituicaoID = instituicoes.Select(i => i.InstituicaoID).Max() + 1;
             return RedirectToAction("Index");
         }
+
+        public ActionResult Edit(long id)
+        {
+            return View(instituicoes.Where(i => i.InstituicaoID == id).First());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(Instituicao instituicao)
+        {
+            instituicoes.Remove(instituicoes.Where(i => i.InstituicaoID == instituicao.InstituicaoID).First());
+            instituicoes.Add(instituicao);
+            return RedirectToAction("Index");
+        }
     }
 }
