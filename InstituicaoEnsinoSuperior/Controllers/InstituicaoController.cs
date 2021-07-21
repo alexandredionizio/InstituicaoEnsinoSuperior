@@ -43,16 +43,16 @@ namespace InstituicaoEnsinoSuperior.Controllers
             }
         };
 
-        public IActionResult Index()
-        {
-            //return View(instituicoes);
-            return View(instituicoes.OrderBy(i => i.Nome));
-        }
-
         //Get: Create
         public ActionResult Create()
         {
             return View();
+        }
+
+        public IActionResult Index()
+        {
+            //return View(instituicoes);
+            return View(instituicoes.OrderBy(i => i.Nome));
         }
 
         [HttpPost]
@@ -75,6 +75,24 @@ namespace InstituicaoEnsinoSuperior.Controllers
         {
             instituicoes.Remove(instituicoes.Where(i => i.InstituicaoID == instituicao.InstituicaoID).First());
             instituicoes.Add(instituicao);
+            return RedirectToAction("Index");
+        }
+
+        public ActionResult Details(long id)
+        {
+            return View(instituicoes.Where(i => i.InstituicaoID == id).First());
+        }
+
+        public ActionResult Delete(long id)
+        {
+            return View(instituicoes.Where(i => i.InstituicaoID == id).First());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Delete(Instituicao instituicao)
+        {
+            instituicoes.Remove(instituicoes.Where(i => i.InstituicaoID == instituicao.InstituicaoID).First());
             return RedirectToAction("Index");
         }
     }
