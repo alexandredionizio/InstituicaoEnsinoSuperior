@@ -145,6 +145,7 @@ namespace InstituicaoEnsinoSuperior.Controllers
             var departamento = await _context.Departamentos.SingleOrDefaultAsync(m => m.DepartamentoID == id);
             _context.Departamentos.Remove(departamento);
             await _context.SaveChangesAsync();
+            TempData["Message"] = "Departamento " + departamento.Nome.ToUpper() + " foi removido";
             return RedirectToAction(nameof(Index));
         }
     }

@@ -236,7 +236,7 @@ namespace InstituicaoEnsinoSuperior.Controllers
             var instituicao = await _context.Instituicoes.SingleOrDefaultAsync(m => m.InstituicaoID == id);
             _context.Instituicoes.Remove(instituicao);
             await _context.SaveChangesAsync();
-            TempData["Messge"] = "Instituição" + instituicao.Nome.ToUpper() + " foi removida";
+            TempData["Message"] = "Instituição " + instituicao.Nome.ToUpper() + " foi removida";
             return RedirectToAction(nameof(Index));
         }
     }
