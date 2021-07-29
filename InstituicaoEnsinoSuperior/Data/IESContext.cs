@@ -15,7 +15,7 @@ namespace InstituicaoEnsinoSuperior.Data
         }
 
         public DbSet <Departamento> Departamentos { get; set; }
-        public DbSet <Instituicao> instituicoes { get; set; }
+        public DbSet <Instituicao> Instituicoes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
