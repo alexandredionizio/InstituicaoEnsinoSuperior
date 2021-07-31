@@ -1,6 +1,7 @@
 ﻿using InstituicaoEnsinoSuperior.Data;
 using InstituicaoEnsinoSuperior.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -20,17 +21,22 @@ namespace InstituicaoEnsinoSuperior.Controllers
         
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Departamentos.OrderBy(c => c.Nome).ToListAsync());
+            //return View(await _context.Departamentos.OrderBy(c => c.Nome).ToListAsync());
+            return View(await _context.Departamentos.Include(i => i.Instituicao).OrderBy(c => c.Nome).ToListAsync());
         }
 
         public IActionResult Create()
         {
+            //return View();
+            var instituicoes = _context.Instituicoes.OrderBy(i => i.Nome).ToList();
+            instituicoes.Insert(0, new Instituicao() { InstituicaoID = 0, Nome = "Selecione a instituição" });
+            ViewBag.Instituicoes = instituicoes;
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Nome")] Departamento departamento)
+        public async Task<IActionResult> Create([Bind("Nome, InstituicaoID")] Departamento departamento)
         {
             try
             {
@@ -63,13 +69,15 @@ namespace InstituicaoEnsinoSuperior.Controllers
                 return NotFound();
             }
 
+            ViewBag.Instituicoes = new SelectList(_context.Instituicoes.OrderBy(b => b.Nome), "InstituicaoID", "Nome", departamento.InstituicaoID);
+
             //caso encontrou o id chamo a view passando o departamento
             return View(departamento);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit (long? id, [Bind("DepartamentoID,Nome")] Departamento departamento)
+        public async Task<IActionResult> Edit (long? id, [Bind("DepartamentoID, Nome, InstituicaoID")] Departamento departamento)
         {
             //Verifica se os valores recebidos para o id e DepartamentoID do objeto departamento são iguais.
             //Caso negativo dispara o erro HTTP 404
@@ -99,6 +107,8 @@ namespace InstituicaoEnsinoSuperior.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.Instituicoes = new 
+                SelectList(_context.Instituicoes.OrderBy(b => b.Nome), "InstituicaoID", "Nome", departamento.InstituicaoID);
             return View(departamento);
         }
 
@@ -115,6 +125,7 @@ namespace InstituicaoEnsinoSuperior.Controllers
             }
 
             var departamento = await _context.Departamentos.SingleOrDefaultAsync(m => m.DepartamentoID == id);
+            _context.Instituicoes.Where(i => departamento.InstituicaoID == i.InstituicaoID).Load();
             if (departamento == null)
             {
                 return NotFound();
@@ -130,22 +141,24 @@ namespace InstituicaoEnsinoSuperior.Controllers
             }
 
             var departamento = await _context.Departamentos.SingleOrDefaultAsync(m => m.DepartamentoID == id);
+            _context.Instituicoes.Where(i => departamento.InstituicaoID == i.InstituicaoID).Load();
+
             if (departamento == null)
             {
                 return NotFound();
             }
             return View(departamento);
         }
-        
-        //POST: Departamento/Delete/5
+
+        // POST: Departamento/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(long? id)
         {
             var departamento = await _context.Departamentos.SingleOrDefaultAsync(m => m.DepartamentoID == id);
             _context.Departamentos.Remove(departamento);
-            await _context.SaveChangesAsync();
             TempData["Message"] = "Departamento " + departamento.Nome.ToUpper() + " foi removido";
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
     }
