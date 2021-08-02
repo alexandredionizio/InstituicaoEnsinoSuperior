@@ -1,4 +1,4 @@
-﻿using InstituicaoEnsinoSuperior.Models;
+﻿using Modelo.Cadastros;
 using System;
 using System.Collections.Generic;
 using System.Linq;
